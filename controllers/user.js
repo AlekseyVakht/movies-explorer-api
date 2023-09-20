@@ -11,18 +11,18 @@ module.exports.createUser = (req, res, next) => {
   const {
     name,
     email,
-    password,
+    password
   } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
       email,
-      password: hash,
+      password: hash
     }))
     .then((user) => {
       res.status(httpConstants.HTTP_STATUS_OK).send({
         name: user.name,
-        email: user.email,
+        email: user.email
       });
     })
     .catch((err) => {
@@ -44,7 +44,7 @@ module.exports.Login = (req, res, next) => {
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' },
+        { expiresIn: '7d' }
       );
       res.send({ token });
     })
@@ -78,7 +78,7 @@ module.exports.updateUser = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+      if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Некорректно переданы данные'));
       } else {
         next(err);
