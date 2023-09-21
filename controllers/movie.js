@@ -41,7 +41,7 @@ module.exports.postMovie = (req, res, next) => {
   })
     .then((movie) => res.send(movie))
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+      if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Некорректно переданы данные'));
       } else {
         next(err);
@@ -53,16 +53,16 @@ module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
     .then((movie) => {
       if (!movie) {
-        throw new NotFoundError('Указанный Id не существует');
+        throw new NotFoundError('Данные не найдены');
       }
       if (((movie.owner).toString() !== req.user._id)) {
-        throw new ForbiddenError('Вы не можете это удалить');
+        throw new ForbiddenError('Вы не можете удалить чужой фильм');
       }
       return Movie.findByIdAndRemove(req.params.movieId)
         .then(() => res.send({ message: 'Удалено' }));
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+      if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Некорректно переданы данные'));
       } else {
         next(err);

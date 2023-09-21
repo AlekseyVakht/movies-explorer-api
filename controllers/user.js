@@ -27,8 +27,8 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        next(new ConflictError('Пользователь с указанным email зарегистрирован'));
-      } else if (err instanceof mongoose.Error.CastError) {
+        next(new ConflictError('Пользователь с указанным email уже зарегистрирован'));
+      } else if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Некорректно переданы данные'));
       } else {
         next(err);
@@ -60,7 +60,7 @@ module.exports.getCurrentUser = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+      if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError('Некорректный Id'));
       } else {
         next(err);
