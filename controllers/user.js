@@ -29,7 +29,7 @@ module.exports.createUser = (req, res, next) => {
       if (err.code === 11000) {
         next(new ConflictError('Пользователь с указанным email уже зарегистрирован'));
       } else if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Некорректно переданы данные'));
+        next(new BadRequestError('Неправильный запрос'));
       } else {
         next(err);
       }
@@ -55,13 +55,13 @@ module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователя с указанным Id не существует');
+        throw new NotFoundError('Заправшиваемый пользователь не найден');
       }
       res.send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Некорректный Id'));
+        next(new BadRequestError('Неправильный запрос'));
       } else {
         next(err);
       }
@@ -73,13 +73,15 @@ module.exports.updateUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователя с указанным Id не существует');
+        throw new NotFoundError('Заправшиваемый пользователь не найден');
       }
       res.send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Некорректно переданы данные'));
+        next(new BadRequestError('Неправильный запрос'));
+      } else if (err.code === 11000) {
+        next(new ConflictError('Пользователь с указанным email уже зарегистрирован'));
       } else {
         next(err);
       }
