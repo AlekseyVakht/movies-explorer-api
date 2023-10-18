@@ -6,7 +6,7 @@ const Movie = require('../models/movie');
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({ owner: req.user._id })
-    .then((movies) => res.send({ movies }))
+    .then((movies) => res.send(movies))
     .catch((err) => next(err));
 };
 
@@ -50,7 +50,7 @@ module.exports.postMovie = (req, res, next) => {
 };
 
 module.exports.deleteMovie = (req, res, next) => {
-  Movie.findById(req.params.movieId)
+  Movie.findById(req.params._id)
     .then((movie) => {
       if (!movie) {
         throw new NotFoundError('Заправшиваемые данные не найдены');
@@ -58,7 +58,7 @@ module.exports.deleteMovie = (req, res, next) => {
       if (((movie.owner).toString() !== req.user._id)) {
         throw new ForbiddenError('Вы не можете удалить чужой фильм');
       }
-      return Movie.findByIdAndRemove(req.params.movieId)
+      return Movie.deleteOne({ _id: movie._id })
         .then(() => res.send({ message: 'Удалено' }));
     })
     .catch((err) => {

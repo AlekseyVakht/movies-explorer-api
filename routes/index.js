@@ -12,7 +12,6 @@ router.post('/signin', validateSignin, Login);
 router.post('/signup', validateSignup, createUser);
 
 router.use(auth);
-
 router.use('/users', require('./user'));
 router.use('/movies', require('./movie'));
 
