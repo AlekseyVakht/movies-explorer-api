@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.connect(NODE_ENV === 'production' ? DATABASE_URL : 'dev-secret');
 
 app.use(requestLogger);
-app.use(limiter);
+// app.use(limiter);
 
 app.use(routes);
 
